@@ -3,7 +3,7 @@
 I just wanted to copy an image taken by my ArduCAM-Mini-2MP with ESP32 to my server whenever two successive images significantly differs from each other, but most examples only show how to store the images to an SD card...
 
 ## 1. Take an ArduCAM image as jpg format
-The following example includes taking a jpg image by ArduCAM-Mini-2MP and storing it to a buffer.
+The following example includes taking a jpg image by ArduCAM-Mini-2MP and storing it into a buffer.
 
 https://github.com/Dasch0/esp32-arducam-edge-impulse/blob/main/src/main.cpp
 
@@ -13,7 +13,7 @@ Tiny JPEG Decompressor can decode a jpg image with a small footprint. Then, I de
 
 http://elm-chan.org/fsw/tjpgd/en/appnote.html
 
-The struct *IODEV* in Example above is modified so as to pass a char type list of jpg image taken by ArduCAM instead of FILE type pointer as an input stream *\*jbuf* and the size as a member *lbyte*. Additionally, a member *diff* to keep the sum of differences between same positional pixels of two successive images.
+The struct *IODEV* in Example above is modified so as to pass a char type list pointer of jpg image taken by ArduCAM instead of FILE type as the input stream *\*jbuf* and the size as a member *lbyte*. Additionally, a member *diff* keeps the sum of differences between same positional pixels of two successive images.
 ```
 // TJpgDec Session identifier for input/output functions (name, members and usage are as user defined)
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 } IODEV;
 ```
 
-Similarly, the input function above is modified so as to copy the above *\*jbuf* to the read buffer *buff* every *nbyte* by memcpy.
+Similarly, the input function is modified so as to copy the above *\*jbuf* to the read buffer *buff* every *nbyte* by memcpy.
 ```
 // TJpgDec User defined input function
 size_t in_func (    /* Returns number of bytes read (zero on error) */
@@ -48,7 +48,7 @@ size_t in_func (    /* Returns number of bytes read (zero on error) */
 }
 ```
 
-The output function above is also modified so as to keep the sum of square root of the sum of the squares of differences of the same positional pixels between two successive images, i.e. the decoded bitmap and the existing output frame buffer, into the above *diff* at the same time of copying the decoded bitmap *bitmap* to the output frame buffer *wfbuf*.
+The output function is also modified so as to keep the sum of square root of the sum of the squares of difference of the same positional pixels between two successive images, i.e. the decoded bitmap and the existing output frame buffer, into the above *diff* at the same time of copying the decoded bitmap *bitmap* to the output frame buffer *wfbuf*.
 ```
 // TJpgDec User defined output function
 unsigned int out_func (      /* Returns 1 to continue, 0 to abort */
@@ -91,7 +91,7 @@ The following is to copy a particular object to an FTP server.
 
 https://playground.arduino.cc/Code/FTP/
 
-Whenever the *diff* by the above calculation exceeds a certain threshold, 20000000 here, the newer image is stored into a ftp server.
+Whenever the *diff* by the above difference calculation exceeds a certain threshold, 20000000 here, the newer image is stored into an ftp server.
 ```
   if (devid.diff > 20000000) { // ftp the current jpg image if the difference between current and previous and images is more than this value
     doFTP(jpeg_buffer, jpeg_size);
@@ -99,7 +99,7 @@ Whenever the *diff* by the above calculation exceeds a certain threshold, 200000
   }
 ```
 
-## 4. Put a expected jpg image to an FTP server
-I combined these three examples into one and can send expected jpg images, i.e. with significant difference between two successive images, to an FTP server as follows.
+## 4. Summary
+I combined three example codes above into one and can send expected jpg images, i.e. with significant difference between two successive images, to an FTP server as follows.
 
 https://github.com/kamotsuru/arducam2ftp/blob/main/arducam2ftp.ino
